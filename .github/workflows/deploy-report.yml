@@ -1,0 +1,24 @@
+name: Deploy Streamlit Report
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to report server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REPORT_HOST }}
+          username: ${{ secrets.REPORT_USER }}
+          key: ${{ secrets.REPORT_SSH_KEY }}
+          script: |
+            cd ~/Eduprova_Report
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            pm2 restart report-app
